@@ -1,49 +1,60 @@
-# Cortex v2 - Enterprise Trading Bot Framework
-*A production-ready, enterprise-grade autonomous trading bot framework with complete architecture, implementation, testing, and documentation.
-**A production-ready, fully modular and event-driven autonomous trading system** built in Python. Designed for institutional-grade risk management, multi-pair monitoring, and AI-powered decision making with automatic fallback to technical analysis.
+Cortex v2 - Enterprise Trading Bot Framework
+A production-ready, fully modular and event-driven autonomous trading system built in Python. Designed for institutional-grade risk management, multi-pair monitoring, and AI-powered decision making with automatic fallback to technical analysis.
 
-##  Key Features
+Key Features
+Architecture
+Event-Driven (Pub/Sub): Components communicate via a decoupled event bus to ensure high-speed processing and reliability.
 
-### Architecture
-- **Event-Driven (Pub/Sub)**: Components communicate via decoupled event bus
-- **Fully Async**: `asyncio`-based concurrent processing for 10+ trading pairs simultaneously
-- **Modular Design**: Swap components (AI models, strategies, exchanges) without touching core code
-- **Enterprise Logging**: Structured JSON logging for monitoring, debugging, and external dashboards (Grafana)
+Fully Async: asyncio-based concurrent processing allows for monitoring 10+ trading pairs simultaneously without thread blocking.
 
-### Core Modules
+Modular Design: Swap components (AI models, strategies, or exchanges) without modifying the core engine code.
 
-#### SENSE (Data & Analysis)
-- **Multi-Exchange Ready**: Binance today, add any exchange in 15 minutes
-- **Order Block Detection**: Identifies institutional accumulation/distribution zones
-- **Fair Value Gap (FVG)**: Detects market imbalances
-- **CVD Tracking**: Cumulative Volume Delta for volume analysis
-- **TA Indicators**: RSI, MACD, Bollinger Bands, Moving Averages, etc.
+Enterprise Logging: Structured JSON logging enables advanced monitoring, debugging, and integration with external dashboards like Grafana or ELK stack.
 
-#### BRAIN (Decision Engine)
-- **AI Integration**: HuggingFace API (Chronos for forecasting, FinBERT for sentiment)
-- **Intelligent Fallback**: Auto-switches to technical analysis if AI API fails
-- **Hybrid Strategy**: Combines AI confidence with technical signals
-- **State Machine**: Tracks market context per trading pair
+Core Modules
+SENSE (Data and Analysis)
+Multi-Exchange Ready: Currently optimized for Binance; extensible to any exchange via a standardized DataProvider interface.
 
-#### RISK & VAULT (Protection)
-- **Portfolio-Level Risk**: Caps total exposure (e.g., max 5% at risk)
-- **Drawdown Protection**: Pauses trading if max DD exceeded
-- **Daily Loss Limits**: Stops trading after daily loss threshold
-- **Position Sizing**: Dynamic sizing based on risk/reward
-- **Correlation Analysis**: Prevents accumulation of correlated trades
+Order Block Detection: Algorithms to identify institutional accumulation and distribution zones.
 
-#### EXEC (Order Execution)
-- **Limit vs Market**: Configurable order types
-- **Trailing Stops**: Dynamic profit protection
-- **Multi-Pair Execution**: Async order placement across pairs
-- **Order Lifecycle Management**: Tracking and monitoring
+Fair Value Gap (FVG): Automated detection of market imbalances and liquidity voids.
 
-##  Quick Start
+CVD Tracking: Cumulative Volume Delta analysis to measure aggressive buying vs. selling pressure.
 
-### 1. Setup Environment
+Technical Indicators: Full integration with TA-Lib for RSI, MACD, Bollinger Bands, and Moving Averages.
 
-```bash
-# Clone/download the project
+BRAIN (Decision Engine)
+AI Integration: Native support for HuggingFace Inference API (Amazon Chronos for forecasting and FinBERT for sentiment analysis).
+
+Intelligent Fallback: Automatically reverts to rule-based technical analysis if AI APIs encounter latency or downtime.
+
+Hybrid Strategy: Weighted decision-making that combines AI probability scores with technical confirmations.
+
+State Machine: Maintains market context (Trend, Range, Volatility) per individual trading pair.
+
+RISK and VAULT (Protection)
+Portfolio-Level Risk: Centralized manager to cap total exposure across all open positions.
+
+Drawdown Protection: Hard-stop logic to pause trading activity if maximum drawdown thresholds are breached.
+
+Daily Loss Limits: Automatic circuit breakers based on daily loss thresholds.
+
+Dynamic Position Sizing: Volatility-adjusted sizing based on Risk/Reward ratios.
+
+Correlation Analysis: Prevents over-exposure by identifying and limiting trades in highly correlated assets.
+
+EXEC (Order Execution)
+Execution Logic: Configurable Limit and Market order types with slippage protection.
+
+Trailing Stops: Dynamic profit protection that adjusts based on price movement.
+
+Lifecycle Management: Real-time tracking and monitoring of order states from placement to settlement.
+
+Quick Start
+1. Setup Environment
+Bash
+# Clone the repository
+git clone https://github.com/iulianipro/-Cortex-v2---Trading-Bot-Framework
 cd cortex_v2
 
 # Create virtual environment
@@ -52,41 +63,24 @@ source venv/bin/activate  # Windows: venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
-```
-
-### 2. Configure Credentials
-
-```bash
+2. Configure Credentials
+Bash
 # Copy .env template
 cp .env.example .env
 
 # Edit .env with your credentials
 # API_KEY=your_binance_api_key
 # API_SECRET=your_binance_api_secret
-```
-
-### 3. Configure Trading Parameters
-
-```bash
-# Edit config/config.yaml
-# - Set trading_pairs (BTCUSDT, ETHUSDT, etc.)
-# - Adjust risk parameters (max_portfolio_risk, max_drawdown)
-# - Choose strategy (hybrid, ai_only, technical_only)
-```
-
-### 4. Run the Bot
-
-```bash
+# HF_TOKEN=your_hugging_face_token
+3. Run the Bot
+Bash
 python main.py
-```
-
-##  Architecture Overview
-
-```
+Architecture Overview
+Plaintext
 ┌─────────────────────────────────────────────────────────────────┐
 │                    CORTEX BOT (Main Orchestrator)               │
 └─────────────────────────────────────────────────────────────────┘
-                                │
+                                 │
                     ┌───────────┴───────────┐
                     ▼                       ▼
             ┌──────────────┐        ┌──────────────┐
@@ -104,79 +98,20 @@ python main.py
     │ ├─ CVD  │ │ └─ Hybrid│ │ ├─ PosSiz│       │ └─ Trailing  │
     │ └─ TA   │ │         │ │ └─ DDMonr│       │              │
     └─────────┘ └─────────┘ └──────────┘       └──────────────┘
-```
-
-##  Event Flow Example
-
-```
-[Market Data Received]
-        ↓
-[SENSE: Calculate Indicators]
-        ↓ emit: "analysis_complete"
-[BRAIN: Generate Signals]
-        ↓ emit: "signal_generated"
-[RISK: Evaluate Portfolio Risk]
-        ↓ emit: "risk_approved" / "risk_rejected"
-[EXEC: Place Order]
-        ↓ emit: "order_placed"
-[Monitor: Trailing Stop & Position Management]
-```
-
-##  Configuration Examples
-
-### Aggressive Strategy
-```yaml
-strategy_type: "ai_only"
-ai_model: "chronos"
-confidence_threshold: 0.60
-max_portfolio_risk: 0.10
-position_size_pct: 0.05
-```
-
-### Conservative Strategy
-```yaml
-strategy_type: "hybrid"
-ai_model: "finbert"
-confidence_threshold: 0.75
-max_portfolio_risk: 0.03
-position_size_pct: 0.01
-max_drawdown: 0.05
-```
-
-### Technical-Only (No AI)
-```yaml
-strategy_type: "technical_only"
-ai_enabled: false
-max_portfolio_risk: 0.05
-position_size_pct: 0.02
-```
-
-##  Testing
-
-```bash
-# Run all tests
+Testing and Quality Assurance
+Bash
+# Execute full test suite
 pytest tests/ -v
 
-# Run specific test file
+# Run specific component tests
 pytest tests/test_order_blocks.py -v
 
-# Run with coverage
+# Generate coverage report
 pytest tests/ --cov=cortex --cov-report=html
-```
+Monitoring and Logging
+All system events are logged as structured JSON to facilitate machine readability:
 
-### Test Coverage
-- ✅ Order Block detection (pattern recognition)
-- ✅ FVG calculation and tracking
-- ✅ Risk manager constraints
-- ✅ Signal generation logic
-- ✅ Configuration loading
-- ✅ Event bus communication
-
-## 📈 Monitoring & Logging
-
-All events are logged as structured JSON:
-
-```json
+JSON
 {
   "timestamp": "2024-01-15T10:30:45.123Z",
   "level": "INFO",
@@ -188,79 +123,8 @@ All events are logged as structured JSON:
     "price_level": 42500.50
   }
 }
-```
+Risk Disclaimers
+Important: Paper trading is enabled by default (paper_trading: true). It is strongly recommended to perform extensive forward testing in a simulated environment before committing real capital. Automated trading bots can fail due to API connectivity issues, market slippage, or unforeseen volatility. Never trade with funds you cannot afford to lose.
 
-### View Logs
-```bash
-# Tail in real-time
-tail -f logs/cortex.log | jq '.'
-
-# Filter by event type
-grep "signal_generated" logs/cortex.log | jq '.data'
-```
-
-### Export to Grafana (Future)
-The JSON structure supports Prometheus metrics export for dashboard integration.
-
-## 🔧 Extending the Bot
-
-### Add a New Exchange
-
-1. Create `cortex/sense/YOUR_EXCHANGE_client.py`
-2. Implement `DataProvider` interface
-3. Update `config.yaml` with new exchange settings
-
-### Add a New Indicator
-
-1. Create `cortex/sense/indicators/YOUR_indicator.py`
-2. Implement analysis logic
-3. Emit indicator results as events
-
-### Add a New Strategy
-
-1. Create `cortex/brain/strategies/YOUR_strategy.py`
-2. Implement `DecisionEngine` interface
-3. Configure in `config.yaml` → `strategy_type`
-
-##  Risk Disclaimers
-
-- **Paper trading** is enabled by default (`paper_trading: true` in config)
-- **Test thoroughly** before enabling real trading
-- **Monitor constantly** - bots can fail unexpectedly
-- **Use small position sizes** initially
-- **Never trade with money you can't afford to lose**
-
-##  Documentation
-
-- `ARCHITECTURE.md` - Detailed system design
-- `MODULES.md` - Individual component documentation
-- `API.md` - Event and method signatures
-- `TROUBLESHOOTING.md` - Common issues and solutions
-
-##  Contributing
-
-To contribute:
-1. Fork the repository
-2. Create a feature branch
-3. Add tests for new functionality
-4. Submit a pull request
-
-##  License
-MIT License - See LICENSE file
-
-##  Support
-
-- **Issues**: Report bugs on GitHub
-- **Discussions**: Share ideas and get help
-- **Documentation**: Check the docs/ folder
-
-##  Learning Resources
-
-- Smart Money Concepts (SMC) - Order Blocks & FVG
-- Technical Analysis Basics - RSI, MACD, Moving Averages
-- Risk Management - Position Sizing & Portfolio Theory
-- Python Async - Asyncio, Pub/Sub patterns
-
----
-
-**Cortex v2** - Build, backtest, and deploy trading bots with enterprise-grade reliability.
+License
+This project is licensed under the MIT License - see the LICENSE file for details.
