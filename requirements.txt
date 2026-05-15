@@ -1,0 +1,56 @@
+# Cortex v2 - Python Dependencies
+
+# Core
+python-dotenv==1.0.0              # Environment variable management
+pyyaml==6.0                        # YAML configuration parsing
+dataclasses-json==0.5.7            # JSON serialization
+
+# Data & Analysis
+pandas==2.0.3                      # Data manipulation
+numpy==1.24.3                      # Numerical computing
+pandas-ta==0.3.14b                 # Technical Analysis indicators
+python-ta-lib==0.4.24              # TA-Lib wrapper (optional, complex to install)
+
+# Exchange APIs
+binance-connector==3.0.0            # Binance official API
+ccxt==4.0.0                         # Multi-exchange support
+
+# AI/ML
+huggingface-hub==0.16.2             # Hugging Face model inference
+torch==2.0.1                        # PyTorch (for some models)
+transformers==4.30.0                # Hugging Face transformers
+
+# Monitoring & Logging
+prometheus-client==0.17.0           # Prometheus metrics export
+python-json-logger==2.0.7           # JSON formatted logging
+
+# Testing
+pytest==7.3.2                       # Unit testing framework
+pytest-asyncio==0.21.0              # Async test support
+pytest-cov==4.1.0                   # Code coverage
+
+# Development
+black==23.5.0                       # Code formatting
+flake8==6.0.0                       # Linting
+mypy==1.3.0                         # Type checking
+isort==5.12.0                       # Import sorting
+
+# Web/API
+fastapi==0.100.0                    # REST API framework (for metrics dashboard)
+uvicorn==0.23.1                     # ASGI server
+httpx==0.24.1                       # HTTP client
+
+# Database (optional)
+sqlalchemy==2.0.19                  # ORM
+psycopg2-binary==2.9.6              # PostgreSQL adapter
+pymongo==4.4.0                      # MongoDB adapter
+
+# Utilities
+aiohttp==3.8.4                      # Async HTTP client
+pytz==2023.3                        # Timezone support
+python-dateutil==2.8.2              # Date utilities
+requests==2.31.0                    # HTTP requests
+
+# Visualization (for notebooks)
+matplotlib==3.7.1                   # Plotting
+plotly==5.14.0                      # Interactive plots
