@@ -1,1 +1,86 @@
+# Cortex v2 - Trading Bot Configuration
+# This file contains all configurable parameters for the bot
 
+# API Configuration
+api_key: "${API_KEY}"              # Set via environment variable
+api_secret: "${API_SECRET}"        # Set via environment variable
+exchange_name: "binance"            # Supported: binance, kucoin, kraken
+
+# Trading Pairs to Monitor
+# Bot will monitor ALL pairs simultaneously (async/concurrent)
+trading_pairs:
+  - "BTCUSDT"
+  - "ETHUSDT"
+  - "XAUUSDT"
+  - "EURUSD"  # If supported by exchange
+
+# Risk Management Parameters
+max_portfolio_risk: 0.05            # 5% - Maximum portfolio exposure at any time
+max_drawdown: 0.10                  # 10% - Pause trading if DD exceeds this
+position_size_pct: 0.02             # 2% - Risk per trade as % of portfolio
+max_daily_loss: 0.02                # 2% - Stop trading if daily loss reached
+max_trades_per_day: 20              # Maximum number of trades per 24h
+
+# AI & Strategy Configuration
+ai_enabled: true                    # Enable AI-based decision making
+ai_model: "chronos"                 # Options: chronos, finbert, technical
+confidence_threshold: 0.65          # Minimum AI confidence to execute trade (0-1)
+strategy_type: "hybrid"             # Options: hybrid, ai_only, technical_only
+fallback_on_ai_failure: true        # Automatically fallback to technical if AI API fails
+
+# Signal Generation
+min_order_block_strength: 0.3       # Minimum OB strength to consider (0-1)
+min_fvg_size_pct: 0.05              # Minimum FVG gap size as % of price
+use_cvd_confirmation: true          # Require CVD confirmation for signals
+cvd_divergence_threshold: 0.7       # Correlation threshold for divergence (0-1)
+
+# Execution Configuration
+order_type: "limit"                 # Options: market, limit
+limit_offset_pct: 0.001             # 0.1% - Price offset for limit orders
+use_trailing_stop: true             # Use trailing stop or fixed stop loss
+trailing_stop_pct: 0.02             # 2% - Trailing stop distance
+tp_multiplier: 2.5                  # Take profit = Risk * Multiplier (R:R ratio)
+
+# Monitoring & Timing
+check_interval_seconds: 60          # How often to check signals (1m interval)
+data_lookback_bars: 100             # Historical bars to keep for analysis
+reconnect_timeout: 30               # Seconds before reconnect attempt
+
+# Logging & Telemetry
+log_level: "INFO"                   # Options: DEBUG, INFO, WARNING, ERROR
+log_file: "logs/cortex.log"         # JSON structured logs
+metrics_export: true                # Export metrics for external dashboards (Grafana)
+metrics_port: 8000                  # Prometheus metrics port
+
+# Data Sources Configuration
+data_sources:
+  binance:
+    enabled: true
+    name: "Binance"
+    kline_interval: "1m"            # 1m, 5m, 15m, 1h, 4h, 1d
+    max_requests_per_second: 10     # Rate limiting
+    cache_duration_seconds: 60
+
+# Database (for trade history, telemetry)
+database:
+  type: "sqlite"                    # sqlite, postgresql, mongodb
+  path: "data/cortex.db"            # For sqlite
+  connection_string: ""             # For remote databases
+
+# Notifications (optional)
+notifications:
+  enabled: false
+  slack_webhook: "${SLACK_WEBHOOK}"
+  telegram_token: "${TELEGRAM_TOKEN}"
+  alert_on_trade: true
+  alert_on_error: true
+  alert_on_dd: true
+
+# Advanced Features
+paper_trading: false                # Paper trading mode (no real orders)
+backtest_mode: false                # Historical backtesting mode
+max_concurrent_positions: 5         # Maximum open positions at once
+position_management:
+  auto_scale_out: true              # Close partial positions at 50% profit
+  scale_out_percentage: 0.5         # Close 50% when TP1 reached
+  scale_out_profit_target: 0.5      # % of initial profit target
